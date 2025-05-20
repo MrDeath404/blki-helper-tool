@@ -41,14 +41,18 @@ void main_menu() {
     show_option("Lock Bootloader (With BlackIron)", 3);
     show_option("Unlock Bootloader", 4);
     show_option("Critical Unlock", 5);
-    show_option("Exit", 6);
+    show_option("Download Tools (adb, avbroot)", 6);
+    show_option("Exit", 7);
 
-    work_input = input;
     input = getch();
+
+    if (input != '\r') {
+        work_input = input;
+    }
 
     if (input == '\r') {
         switch (work_input) {
-        case '6':
+        case '7':
             exit(0);
         default:
             break;
@@ -58,15 +62,15 @@ void main_menu() {
 
 int main() {
 
-    clear();
-
     while (true) {
-
-        main_menu();
 
         clear();
 
-        sleep(1);
+
+        main_menu();
+
+
+        sleep(10);
     }
 
     return 0;
