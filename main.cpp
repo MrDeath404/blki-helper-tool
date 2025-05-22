@@ -1,15 +1,15 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <filesystem>
+#include <stdlib.h>
 
 #ifdef __WIN32__
-#include <Windows.h>
 #include <conio.h>
 #else
-#include <stdlib.h>
+
 #include <termios.h>
 #include <unistd.h>
-
 char getch() {
 
     char buffer = '\0';
@@ -50,9 +50,22 @@ void clear() {
 inline short menu_id = 0;
 inline char input = '0';
 inline char work_input = input;
+inline string current_path;
 
 int ctoi(char _char) {
     return static_cast<int>(_char - '0');
+}
+
+string execute(string command) {
+    char buffer[256];
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) return "\0";
+    string result;
+    while (fgets(buffer, 256, pipe) != nullptr) {
+        result += buffer;
+    }
+    pclose(pipe);
+    return result;
 }
 
 void show_option(string text, int number) {
@@ -137,6 +150,34 @@ void main_menu() {
     }
 }
 
+bool check_tools_status() {
+
+    if (!filesystem::is_directory(filesystem::path(current_path + "\bin"))) {
+        print("Install Tools first!!!", RED);
+        return false;
+    }
+
+#ifdef _WIN32_
+    if (system(string("set PATH=\"" + current_path + "\bin" + ";%PATH%\"").c_str())) {
+        return false;
+    }
+#else
+    if (system(string("export PATH=\"" + current_path + "\bin" + ";$PATH\"").c_str())) {
+        return false;
+    }
+#endif
+
+#ifdef _WIN32_
+    if (system("")) {
+        
+    }
+#else
+
+#endif
+
+    return true;
+}
+
 bool frist_installation() {
     return true;
 }
@@ -158,71 +199,77 @@ bool bl_critical_unlock() {
 }
 
 bool download_tools() {
+    print("Section is not ready", RED);
     return true;
 }
 
 int main() {
+#ifdef __WIN32__
+    current_path = execute("cd");
+#else
+    current_path = execute("pwd");
+#endif
 
-    while (true) {
+    // while (true) {
 
-        clear();
+    //     clear();
 
-        switch (menu_id) {
-            case 0:
-                main_menu();
-            break;
-            case 1:
-                if (!frist_installation()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-            case 2:
-                if (!update()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-            case 3:
-                if (!bl_lock_blki()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-            case 4:
-                if (!bl_unlock()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-            case 5:
-                if (!bl_critical_unlock()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-            case 6:
-                if (!download_tools()) {
-                    if (!message_text("Do you want to retry?")) {
-                        menu_id = 0;
-                    }
-                }
-                menu_id = 0;
-            break;
-        }
+    //     switch (menu_id) {
+    //         case 0:
+    //             main_menu();
+    //         break;
+    //         case 1:
+    //             if (!frist_installation()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //         case 2:
+    //             if (!update()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //         case 3:
+    //             if (!bl_lock_blki()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //         case 4:
+    //             if (!bl_unlock()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //         case 5:
+    //             if (!bl_critical_unlock()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //         case 6:
+    //             if (!download_tools()) {
+    //                 if (!message_text("Do you want to retry?")) {
+    //                     menu_id = 0;
+    //                 }
+    //             }
+    //             menu_id = 0;
+    //         break;
+    //     }
 
-        sleep(10);
-    }
+    //     sleep(10);
+    // }
 
     return 0;
 }
