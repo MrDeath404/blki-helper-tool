@@ -28,6 +28,7 @@ void clear() {
 inline short menu_id = 0;
 inline char input = '0';
 inline char work_input = input;
+inline short progress = 0;
 
 void show_option(string text, int number) {
     print("[", GRAY, '\0'); print(to_string(number), SILVER, '\0'); print("] ", GRAY, '\0');
